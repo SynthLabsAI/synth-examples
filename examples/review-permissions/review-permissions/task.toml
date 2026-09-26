@@ -1,0 +1,16 @@
+version = "1.0"
+
+[metadata]
+name = "review-permissions"
+description = "Review an authorization regression and supply an executable counterexample."
+
+[agent]
+user = "reviewer"
+timeout_sec = 180
+
+[verifier]
+timeout_sec = 60
+
+[environment]
+cpus = 1
+memory_mb = 4096

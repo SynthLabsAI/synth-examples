@@ -1,0 +1,29 @@
+{
+  "schema": "synth.agent-profile.v2",
+  "agent": {
+    "model": "thinkingmachines/Inkling-Small:peft:262144",
+    "engine": {"type": "claude-code", "version": "2.1.263"},
+    "files": {
+      "mcp": {"path": "mcp.json", "content": "{\"mcpServers\":{}}\n"}
+    },
+    "execution": {
+      "cwd": "{{task.workspace}}",
+      "args": [
+        "--model", "{{model}}",
+        "--session-id", "{{run.session_id}}",
+        "--setting-sources", "",
+        "--permission-mode", "dontAsk",
+        "--tools", "Read,Glob,Grep,Bash,Write",
+        "--allowedTools", "Read,Glob,Grep,Bash,Write",
+        "--disallowedTools", "WebSearch,WebFetch,Agent,Task",
+        "--strict-mcp-config",
+        "--mcp-config", "{{files.mcp}}",
+        "--print"
+      ],
+      "stdin": {"file": "{{task.instruction_file}}"}
+    },
+    "outputs": {
+      "review": {"path": "/logs/artifacts/review.json", "required": true}
+    }
+  }
+}

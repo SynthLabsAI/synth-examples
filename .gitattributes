@@ -1,0 +1,2 @@
+# Unified diff context lines preserve a leading space on blank source lines.
+*.diff whitespace=-blank-at-eol

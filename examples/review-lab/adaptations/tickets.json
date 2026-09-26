@@ -1,0 +1,11 @@
+{
+  "name": "tickets",
+  "policy": "A ticket can be reassigned to a team only if the team is active, it belongs to the ticket organization, and its current open-ticket count is less than its capacity. Every condition is required. Capacity and counts are nonnegative integers; organization IDs are opaque strings.",
+  "before": "return x[\"active\"] and x[\"team_org\"] == x[\"ticket_org\"] and x[\"open\"] < x[\"capacity\"]",
+  "after": "return x[\"active\"] and x[\"team_org\"] == x[\"ticket_org\"] or x[\"open\"] < x[\"capacity\"]",
+  "clean": "same_org = x[\"team_org\"] == x[\"ticket_org\"]\n    has_room = x[\"open\"] < x[\"capacity\"]\n    return x[\"active\"] and same_org and has_room",
+  "domain": [{"active":true,"team_org":"alpha","ticket_org":"alpha","open":1,"capacity":2},{"active":false,"team_org":"alpha","ticket_org":"beta","open":0,"capacity":2},{"active":true,"team_org":"alpha","ticket_org":"alpha","open":2,"capacity":2},{"active":true,"team_org":"alpha","ticket_org":"beta","open":1,"capacity":2}],
+  "root": "The OR separates the capacity condition from the active and tenant conditions, accepting inactive/cross-tenant teams with room and full active same-tenant teams.",
+  "provenance": "Independent original MIT-licensed support-workflow teaching task. Not a customer incident.",
+  "privacy_review": "All identities are fabricated. The policy supplies the full business rule; there are no undocumented downstream permission checks. Reassignment effects are represented by the decision function, not a running helpdesk."
+}

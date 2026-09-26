@@ -1,0 +1,11 @@
+--- a/permissions.py
++++ b/permissions.py
+@@ -14,7 +14,7 @@
+ 
+ 
+ def can_download(user, export):
+-    return user.is_admin and user.org_id == export.org_id
++    return user.is_admin or user.org_id == export.org_id
+ 
+ 
+ def download_export(user, export):

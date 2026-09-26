@@ -1,0 +1,14 @@
+{
+  "schema": "synth.agent-profile.v2",
+  "agent": {
+    "model": "Qwen/Qwen3.8-27B:peft:262144",
+    "engine": {"type": "claude-code", "version": "2.1.263"},
+    "files": {"mcp": {"path": "mcp.json", "content": "{\"mcpServers\":{}}\n"}},
+    "execution": {
+      "cwd": "{{task.workspace}}",
+      "args": ["--model", "{{model}}", "--session-id", "{{run.session_id}}", "--setting-sources", "", "--permission-mode", "dontAsk", "--tools", "", "--allowedTools", "", "--disallowedTools", "Read,Glob,Grep,Bash,Write,Edit,WebSearch,WebFetch,Agent,Task", "--strict-mcp-config", "--mcp-config", "{{files.mcp}}", "--print"],
+      "stdin": {"text": "A fixed assessment candidate is already in place. Do not change any files. Respond READY."}
+    },
+    "outputs": {"review": {"path": "/logs/artifacts/review.json", "required": true}}
+  }
+}
