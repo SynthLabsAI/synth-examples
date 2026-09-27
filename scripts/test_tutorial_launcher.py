@@ -52,14 +52,22 @@ class LauncherTests(unittest.TestCase):
             self.assertEqual(retained['runs']['one']['id'], 'retained-run')
             self.assertEqual(retained['reserved_trials'], 0)
 
-    def test_reject_bad_bound_and_unconfirmed_context(self):
-        for limit, confirm in [(0, True), (1001, True), (1, False)]:
+    def test_reject_bad_bound(self):
+        for limit, confirm in [(0, True), (1001, True)]:
             with self.assertRaises(RuntimeError):
                 tutorial.prepare(self.path/'bad', limit, confirm)
 
-    def test_no_service_key_no_production_no_anonymous(self):
-        for change in [{'service_key_active': True}, {'request_authenticated': False},
-                       {'api_base_url': 'https://sprites-gateway.api.synthlabs.ai'}]:
+    def test_default_customer_connection_needs_no_confirmation(self):
+        account = {**ACCOUNT, 'api_base_url': 'https://sprites-gateway.api.synthlabs.ai'}
+        with patch.object(tutorial, 'cli', return_value=account) as read:
+            tutorial.prepare(self.path/'normal', 16, False)
+        read.assert_called_once_with(['status', '--json'])
+        state = json.loads((self.path/'normal/state.json').read_text())
+        self.assertEqual(state['identity']['api_base_url'], account['api_base_url'])
+        self.assertEqual(state['reserved_trials'], 0)
+
+    def test_no_service_key_no_anonymous(self):
+        for change in [{'service_key_active': True}, {'request_authenticated': False}]:
             with patch.object(tutorial, 'cli', return_value={**ACCOUNT, **change}):
                 with self.assertRaises(RuntimeError):
                     tutorial.identity()

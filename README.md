@@ -3,12 +3,12 @@
 Complete, inspectable examples for building, running, evaluating and improving
 agents with the [Synth CLI](https://synthlabs.mintlify.app/).
 
-Synth is not limited to coding or GitHub. An agent profile describes a model and
+An agent profile describes a model and
 its execution recipe; a task supplies the work and environment; an assessment
 defines success. A support case, evidence-grounded document analysis or research
 task can use the same structure, with suitable tools, context and assessment.
-Those are application ideas, not bundled integrations. The first worked example
-here is code review because its source, output and counterexample are inspectable.
+The worked example here is a code reviewer for DispatchDesk, a fictional
+application with permissions, billing and queue policies.
 
 ## Start here
 
@@ -22,12 +22,12 @@ for a real recorded result without an account or model spending.
 - Tagged releases provide ordinary ZIP files and SHA-256 checksums. Each archive
   expands to the corresponding example files; extract into a new directory.
 
-Live execution is qualified with CLI **0.0.1-alpha.62**, Python 3.10+, and an
-**existing provisioned Dev account** with model access, task/dataset publication,
-execution/training permissions and compute credits. Public signup does not
-automatically grant these permissions. No provider credentials are distributed
-here. Reading and building the packages do not call models; execution spends
-compute and requires your authorization.
+[Create a Synth account](https://app.synthlabs.ai),
+[install the CLI](https://synthlabs.mintlify.app/getting-started/install),
+and sign in with `synth login`. The example scripts also need Python 3.10+
+and a macOS or Linux terminal. The downloads include the tasks, profiles
+and assessment tools. Start with one trial, then preview larger experiments
+before launching them.
 
 The examples are original MIT-licensed teaching projects, not historical customer
 work. A completed run or trained checkpoint is not evidence that an agent improved.

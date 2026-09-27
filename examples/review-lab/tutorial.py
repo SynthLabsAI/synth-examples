@@ -50,11 +50,7 @@ def cli(args):
 def identity():
     status = cli(['status', '--json'])
     if not status.get('request_authenticated') or status.get('service_key_active'):
-        raise RuntimeError('Use normal customer sign-in, not a service key. Run synth login and retry the read-only status check.')
-    # Production is not a qualification target for this release of the lab.
-    endpoint = status.get('api_base_url', '').rstrip('/')
-    if endpoint == 'https://sprites-gateway.api.synthlabs.ai':
-        raise RuntimeError('This lab is qualified for provisioned Dev accounts only. Do not switch endpoints using this script; ask your organization for the supported access setup.')
+        raise RuntimeError('Sign in with synth login, then retry.')
     return {k: status[k] for k in ('user_id', 'org', 'api_base_url')}
 
 
@@ -116,9 +112,10 @@ def freeze_profile(source, target, expected_hash):
         raise RuntimeError('Frozen profile bytes changed; preserve the original experiment and investigate before submitting.')
 
 
-def prepare(path, max_trials, confirm_dev):
-    if not confirm_dev or not 1 <= max_trials <= 1000:
-        raise RuntimeError('Confirm your provisioned Dev context with --confirm-dev and choose --max-trials between 1 and 1000.')
+def prepare(path, max_trials, confirm_dev=None):
+    # The optional legacy confirmation is accepted but no longer required.
+    if not 1 <= max_trials <= 1000:
+        raise RuntimeError('Choose --max-trials between 1 and 1000.')
     account = identity()
     path.mkdir(parents=True, exist_ok=False)
     (path/'operations').mkdir()
@@ -213,7 +210,7 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     init = sub.add_parser('prepare')
     init.add_argument('--max-trials', type=int, required=True)
-    init.add_argument('--confirm-dev', action='store_true')
+    init.add_argument('--confirm-dev', action='store_true', help=argparse.SUPPRESS)
     run = sub.add_parser('launch')
     run.add_argument('--name', required=True)
     run.add_argument('--split', choices=['practice', 'held-out'], required=True)

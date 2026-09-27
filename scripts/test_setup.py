@@ -47,10 +47,19 @@ class SetupTests(unittest.TestCase):
         self.assertFalse(result["paid_work_submitted"])
         self.assertNotIn("api_base_url", result)
 
+    def test_sign_in_works_without_environment_confirmation(self):
+        self.assertEqual(self.run_check(confirmed=False)["local_prerequisites"], "passed")
+
+    def test_default_customer_endpoint_is_accepted(self):
+        for endpoint in (CHECK.PRODUCTION, CHECK.PRODUCTION+'/', CHECK.PRODUCTION.upper(),
+                         CHECK.PRODUCTION+':443', CHECK.PRODUCTION+'./'):
+            with self.subTest(endpoint=endpoint):
+                self.assertEqual(self.run_check(api_base_url=endpoint)["local_prerequisites"], "passed")
+
     def test_fail_closed_for_wrong_context_auth_release(self):
-        for args in ({"confirmed": False}, {"version": "synth 0.0.1-alpha.51"},
+        for args in ({"version": "synth 0.0.1-alpha.51"},
                      {"request_authenticated": False}, {"service_key_active": True},
-                     {"api_base_url": CHECK.PRODUCTION+"/"}, {"api_base_url": "http://localhost"}):
+                     {"api_base_url": "http://localhost"}):
             with self.subTest(args=args), self.assertRaises(ValueError):
                 self.run_check(**args)
 
@@ -66,10 +75,8 @@ class SetupTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     CHECK.check(folder, True, runner)
 
-    def test_production_url_spellings_and_malformed_urls_rejected(self):
-        for endpoint in (CHECK.PRODUCTION.upper(), CHECK.PRODUCTION+':443',
-                         CHECK.PRODUCTION+'./', CHECK.PRODUCTION+'/api',
-                         'https://user@sprites-gateway.api.synthlabs.ai',
+    def test_credentials_and_malformed_urls_rejected(self):
+        for endpoint in ('https://user@sprites-gateway.api.synthlabs.ai',
                          'https://provisioned.example.test?token=not-a-real-secret',
                          'https://', 'https://provisioned.example.test:bad',
                          'https://provisioned.example.test/#fragment'):

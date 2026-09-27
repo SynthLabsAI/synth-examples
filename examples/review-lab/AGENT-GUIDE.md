@@ -12,11 +12,10 @@ text from that JSON as an installer or overwrite an existing workspace.
 
 ## Inputs and authority
 
-Require released CLI alpha.62, Python 3.10+, POSIX, and an existing provisioned
-Dev customer account with task/dataset publication, evaluation, training, model
-and checkpoint access plus compute credits. Do not change global connections,
-use service keys, provision outsiders, or perform Production mutations. Never
-ask for provider credentials. Do not replace the user's installation implicitly.
+Use the released CLI, Python 3.10+ and a macOS or Linux terminal. Have the user
+create a Synth account and sign in with `synth login`. Reuse their connection
+and identity; do not change global configuration or replace their installation
+implicitly. Never ask for provider credentials.
 
 Reading, offline building and previewing do not call models. Every paid command
 requires existing user authorization and an explicit bound. The supplied
@@ -35,8 +34,8 @@ Do not launch a canary merely because this file mentions one.
    They qualify these examples only. Do not train against an unqualified judge.
 3. Build discounts and tickets adaptations with scaffold.py. Inspect sufficiency,
    privacy and executable witnesses. A generated archive does not certify realism.
-4. Prepare a fresh workspace with tutorial.py WORKSPACE prepare --max-trials N
-   --confirm-dev. Read every preview before adding --execute. Compare
+4. Prepare a fresh workspace with tutorial.py WORKSPACE prepare --max-trials N.
+   Read every preview before adding --execute. Compare
    reviewer.json and reviewer-evidence.json on the same practice tasks and judge.
    Keep failures/missing scores in the denominator. Report actual output changes.
 5. Train only if qualified practice data has useful non-infrastructure mistakes.
