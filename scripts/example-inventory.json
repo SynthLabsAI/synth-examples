@@ -1,0 +1,39 @@
+{
+  "review-permissions": [
+    "README.md",
+    "check_setup.py",
+    "eval-plan.json",
+    "review-permissions/environment/Dockerfile",
+    "review-permissions/environment/POLICY.md",
+    "review-permissions/environment/change.diff",
+    "review-permissions/environment/permissions.py",
+    "review-permissions/instruction.md",
+    "review-permissions/task.toml",
+    "review-permissions/tests/grade.py",
+    "review-permissions/tests/test.sh",
+    "reviewer.json",
+    "train-plan.json"
+  ],
+  "review-lab": [
+    "AGENT-GUIDE.md",
+    "LICENSE",
+    "README.md",
+    "adaptations/discounts.json",
+    "adaptations/tickets.json",
+    "build.py",
+    "calibration-actor.json",
+    "calibration.py",
+    "check_setup.py",
+    "curriculum.py",
+    "grade.py",
+    "judge.json",
+    "learner-small.json",
+    "learner.json",
+    "report.py",
+    "reviewer-evidence.json",
+    "reviewer-readonly.json",
+    "reviewer.json",
+    "scaffold.py",
+    "tutorial.py"
+  ]
+}

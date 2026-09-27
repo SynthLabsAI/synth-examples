@@ -1,0 +1,11 @@
+{
+  "name": "discounts",
+  "policy": "A purchase qualifies for a discount only when the customer is a member and the subtotal is at least 10000 integer cents. The threshold is inclusive. Both requirements apply; refunds and negative subtotals are outside this interface.",
+  "before": "return x[\"member\"] and x[\"subtotal\"] >= 10000",
+  "after": "return x[\"member\"] and x[\"subtotal\"] > 10000",
+  "clean": "eligible_amount = x[\"subtotal\"] >= 10000\n    return x[\"member\"] and eligible_amount",
+  "domain": [{"member":true,"subtotal":9999},{"member":true,"subtotal":10000},{"member":true,"subtotal":10001},{"member":false,"subtotal":10000}],
+  "root": "The strict comparison excludes members spending exactly the inclusive discount threshold.",
+  "provenance": "Original MIT-licensed teaching adaptation. Not a customer incident. Policy above is the authoritative specification.",
+  "privacy_review": "No personal records, credentials or proprietary code. Complete finite interface and no external dependencies. Assessment remains separate from the actor image."
+}

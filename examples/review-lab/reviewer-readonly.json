@@ -1,0 +1,30 @@
+{
+  "schema": "synth.agent-profile.v2",
+  "agent": {
+    "model": "Qwen/Qwen3.8-27B:peft:262144",
+    "engine": {"type": "claude-code", "version": "2.1.263"},
+    "files": {
+      "mcp": {"path": "mcp.json", "content": "{\"mcpServers\":{}}\n"}
+    },
+    "execution": {
+      "cwd": "{{task.workspace}}",
+      "args": [
+        "--model", "{{model}}",
+        "--session-id", "{{run.session_id}}",
+        "--setting-sources", "",
+        "--permission-mode", "dontAsk",
+        "--tools", "Read,Glob,Grep,Write",
+        "--allowedTools", "Read,Glob,Grep,Write",
+        "--disallowedTools", "Bash,WebSearch,WebFetch,Agent,Task",
+        "--strict-mcp-config",
+        "--mcp-config", "{{files.mcp}}",
+        "--append-system-prompt", "This is read-only source review: you may inspect code and write the required review artifact, but may not execute repository code or shell commands. Derive the counterexample and policy result by reasoning from the supplied source and policy. Do not claim to have executed a test. This restriction exists for workflows that do not authorize execution of untrusted code; it does not change the required accuracy or output contract.",
+        "--print"
+      ],
+      "stdin": {"file": "{{task.instruction_file}}"}
+    },
+    "outputs": {
+      "review": {"path": "/logs/artifacts/review.json", "required": true}
+    }
+  }
+}
