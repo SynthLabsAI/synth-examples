@@ -15,6 +15,12 @@ SPEC.loader.exec_module(BUILDER)
 
 
 class DistributionTests(unittest.TestCase):
+    def test_packaged_instructions_use_normal_sign_in(self):
+        for source in [ROOT/'README.md', *(ROOT/'examples').glob('*/README.md'),
+                       ROOT/'examples/review-lab/AGENT-GUIDE.md']:
+            with self.subTest(path=source.relative_to(ROOT)):
+                self.assertNotRegex(source.read_text(), r'(?i)--confirm-dev|provisioned|Dev account|available credits')
+
     def test_unexpected_files_and_symlinks_fail_closed(self):
         import tempfile
         with tempfile.TemporaryDirectory() as directory:
@@ -50,6 +56,11 @@ class DistributionTests(unittest.TestCase):
                     self.assertNotIn('..',PurePosixPath(name).parts)
                     content = bundle.read(name)
                     self.assertEqual(digest,hashlib.sha256(content).hexdigest())
+                    if PurePosixPath(name).name in {'README.md', 'AGENT-GUIDE.md'}:
+                        self.assertNotRegex(
+                            content.decode(),
+                            r'(?i)--confirm-dev|provisioned|Dev account|available credits',
+                            f'{asset["name"]}:{name}')
                     for private in (b'/Users/',b'.api.dev.synthlabs.ai',b'BEGIN PRIVATE KEY'):
                         self.assertNotIn(private,content,name)
                 if asset['name']=='review-permissions.zip':
