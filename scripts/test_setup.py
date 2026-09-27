@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("setup_check", ROOT/"examples/review-permissions/check_setup.py")
@@ -12,6 +13,11 @@ SPEC.loader.exec_module(CHECK)
 
 
 class SetupTests(unittest.TestCase):
+    def test_missing_cli_has_installation_guidance(self):
+        with patch.object(CHECK.subprocess, "run", side_effect=FileNotFoundError("missing")):
+            with self.assertRaisesRegex(ValueError, "Synth CLI.*not found.*https://synthlabs.mintlify.app/getting-started/install"):
+                CHECK.invoke(["version"])
+
     def run_check(self, confirmed=True, version=CHECK.EXPECTED, **status):
         calls = []
         auth = {"request_authenticated": True, "service_key_active": False,

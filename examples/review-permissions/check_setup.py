@@ -13,7 +13,11 @@ PRODUCTION = 'https://sprites-gateway.api.synthlabs.ai'
 
 
 def invoke(args):
-    result = subprocess.run(['synth', *args], capture_output=True, text=True, timeout=30)
+    try:
+        result = subprocess.run(['synth', *args], capture_output=True, text=True, timeout=30)
+    except FileNotFoundError:
+        raise ValueError('Synth CLI was not found on PATH; install CLI alpha.62: '
+                         'https://synthlabs.mintlify.app/getting-started/install') from None
     if result.returncode:
         raise ValueError('synth ' + ' '.join(args[:2]) + ' failed; inspect that command before proceeding')
     return result.stdout
