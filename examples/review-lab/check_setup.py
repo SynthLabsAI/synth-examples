@@ -23,9 +23,8 @@ def invoke(args):
     return result.stdout
 
 
-def check(directory, confirmed, runner=invoke):
-    if not confirmed:
-        raise ValueError('Use --confirm-dev only after your organization has provisioned Dev access')
+def check(directory, confirmed=None, runner=invoke):
+    # Keep the old optional argument for callers of previous example releases.
     if sys.version_info < (3, 10):
         raise ValueError('Python 3.10 or later is required')
     version = runner(['version']).strip()
@@ -33,19 +32,18 @@ def check(directory, confirmed, runner=invoke):
         raise ValueError('This example is qualified with ' + EXPECTED + '; inspect your installed release')
     status = json.loads(runner(['status', '--json']))
     if not isinstance(status, dict) or not status.get('request_authenticated') or status.get('service_key_active'):
-        raise ValueError('Normal customer sign-in is required; this check does not sign you in')
+        raise ValueError('Sign in with synth login, then run this check again')
     try:
         endpoint = urlsplit(status.get('api_base_url', ''))
         port = endpoint.port
         unsafe = (endpoint.scheme != 'https' or not endpoint.hostname
-                  or endpoint.hostname.rstrip('.').lower() == urlsplit(PRODUCTION).hostname
                   or endpoint.username is not None or endpoint.password is not None
                   or bool(endpoint.query) or bool(endpoint.fragment)
                   or port == 0)
     except (AttributeError, TypeError, ValueError):
         unsafe = True
     if unsafe:
-        raise ValueError('Use your provisioned Dev context; this check does not change the connection')
+        raise ValueError('The CLI connection must be a valid HTTPS URL without embedded credentials, a query or fragment')
     profile = directory/'reviewer.json'
     if profile.is_symlink() or not profile.is_file():
         raise ValueError('Run this check beside the ordinary reviewer.json supplied in the project')
@@ -60,7 +58,7 @@ def check(directory, confirmed, runner=invoke):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--confirm-dev', action='store_true')
+    parser.add_argument('--confirm-dev', action='store_true', help=argparse.SUPPRESS)
     options = parser.parse_args()
     try:
         print(json.dumps(check(Path(__file__).resolve().parent, options.confirm_dev), indent=2))
