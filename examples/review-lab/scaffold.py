@@ -17,6 +17,8 @@ def scaffold(specification, destination):
         raise ValueError('Missing fields: ' + ', '.join(sorted(required - case.keys())))
     if not isinstance(case['name'], str) or not re.fullmatch(r'[a-z][a-z_]{0,30}', case['name']):
         raise ValueError('name must be a safe Python module name')
+    if case['name'] == 'app' or case['name'] in sys.stdlib_module_names:
+        raise ValueError('name must not shadow the app adapter or a Python standard-library module')
     for key in required - {'domain'}:
         if not isinstance(case[key], str) or not case[key].strip():
             raise ValueError(key + ' must be a nonempty string')

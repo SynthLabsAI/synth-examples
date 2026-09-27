@@ -278,7 +278,7 @@ def main():
                 if target.exists():
                     raise RuntimeError('Evidence already exists; inspect it instead of overwriting.')
                 target.parent.mkdir(exist_ok=True)
-                subprocess.run(['synth', 'run', 'export', run['id'], '--output', str(target)], check=True)
+                subprocess.run(['synth', 'run', 'export', run['id'], '--output', str(target)], check=True, timeout=600)
 
 
 if __name__ == '__main__':

@@ -27,6 +27,17 @@ def finding(case, inputs, expected):
 
 
 class LabTests(unittest.TestCase):
+    def test_scaffold_rejects_adapter_and_standard_library_collisions(self):
+        case = json.loads((ROOT/'adaptations/discounts.json').read_text())
+        for name in ('app', 'json', 'importlib', 'sys', 'fractions'):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                folder = Path(directory)
+                source = folder/'case.json'
+                source.write_text(json.dumps({**case, 'name': name}))
+                with self.assertRaisesRegex(ValueError, 'shadow'):
+                    scaffold(source, folder/'output')
+                self.assertFalse((folder/'output').exists())
+
     def test_both_supplied_adaptations_are_qualified_and_packaged(self):
         for spec in sorted((ROOT/'adaptations').glob('*.json')):
             case = json.loads(spec.read_text())

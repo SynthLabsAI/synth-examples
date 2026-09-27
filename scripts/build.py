@@ -13,13 +13,15 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT/'dist'
 
 
-def inventory(directory):
+def inventory(directory, allowed=None):
     result = {}
     for path in sorted(directory.rglob('*')):
         if path.is_symlink():
             raise ValueError('Symlinks are not allowed in example packages')
         if path.is_file() and '__pycache__' not in path.parts and path.name != '.DS_Store':
             result[path.relative_to(directory).as_posix()] = path.read_bytes()
+    if allowed is not None and set(result) != set(allowed):
+        raise ValueError('Unexpected or missing package files: ' + str(sorted(set(result) ^ set(allowed))))
     return result
 
 
@@ -37,9 +39,10 @@ def archive(files):
 def build():
     DIST.mkdir(exist_ok=True)
     assets = []
+    allowlists = json.loads((ROOT/'scripts/example-inventory.json').read_text())
     for name in ('review-permissions', 'review-lab'):
         directory = ROOT/'examples'/name
-        files = inventory(directory)
+        files = inventory(directory, allowlists[name])
         files['LICENSE'] = (ROOT/'LICENSE').read_bytes()
         if name == 'review-lab':
             with tempfile.TemporaryDirectory() as temporary:

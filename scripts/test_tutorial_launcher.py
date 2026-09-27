@@ -39,6 +39,19 @@ class LauncherTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 tutorial.prepare(self.path, 32, True)
 
+    def test_export_timeout_releases_workspace_without_resubmission(self):
+        self.state['runs']['one'] = {'id': 'retained-run'}
+        tutorial.atomic(self.path/'state.json', self.state)
+        with (patch.object(sys, 'argv', ['tutorial.py', str(self.path), 'export', 'one']),
+              patch.object(tutorial, 'cli', return_value={'run': {'state': 'succeeded'}}),
+              patch.object(tutorial.subprocess, 'run', side_effect=subprocess.TimeoutExpired('synth', 600)) as export):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                tutorial.main()
+        self.assertEqual(export.call_args.kwargs, {'check': True, 'timeout': 600})
+        with tutorial.workspace(self.path) as retained:
+            self.assertEqual(retained['runs']['one']['id'], 'retained-run')
+            self.assertEqual(retained['reserved_trials'], 0)
+
     def test_reject_bad_bound_and_unconfirmed_context(self):
         for limit, confirm in [(0, True), (1001, True), (1, False)]:
             with self.assertRaises(RuntimeError):
