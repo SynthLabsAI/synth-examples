@@ -13,11 +13,9 @@ The profile permits Read, Glob, Grep, Bash and Write without interactive approva
 It is intended for the prepared managed task, not arbitrary host execution.
 Do not run it locally without reviewing its permissions and files.
 
-No credentials are included. The supplied profile requires the model and engine
-access stated in the tutorial. The Docker base is pinned by image digest.
-The evaluation plan requests exactly one trial. Before live work, run the
-read-only local check: `python3 check_setup.py --confirm-dev`. It does not prove
-server permission, model availability or available credits.
+Sign in with `synth login`, then run the read-only setup check:
+`python3 check_setup.py`. The evaluation plan requests exactly one trial.
+The Docker base is pinned by image digest.
 
 The included training plan is an illustration for a multi-task practice dataset.
 It requests 24 slots. It is not a recommendation to train only on this one toy
