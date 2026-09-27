@@ -56,6 +56,11 @@ class DistributionTests(unittest.TestCase):
                     self.assertNotIn('..',PurePosixPath(name).parts)
                     content = bundle.read(name)
                     self.assertEqual(digest,hashlib.sha256(content).hexdigest())
+                    if PurePosixPath(name).name in {'README.md', 'AGENT-GUIDE.md'}:
+                        self.assertNotRegex(
+                            content.decode(),
+                            r'(?i)--confirm-dev|provisioned|Dev account|available credits',
+                            f'{asset["name"]}:{name}')
                     for private in (b'/Users/',b'.api.dev.synthlabs.ai',b'BEGIN PRIVATE KEY'):
                         self.assertNotIn(private,content,name)
                 if asset['name']=='review-permissions.zip':
