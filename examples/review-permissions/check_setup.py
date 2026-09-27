@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from urllib.parse import urlsplit
 
 EXPECTED = 'synth 0.0.1-alpha.62'
 PRODUCTION = 'https://sprites-gateway.api.synthlabs.ai'
@@ -29,8 +30,17 @@ def check(directory, confirmed, runner=invoke):
     status = json.loads(runner(['status', '--json']))
     if not isinstance(status, dict) or not status.get('request_authenticated') or status.get('service_key_active'):
         raise ValueError('Normal customer sign-in is required; this check does not sign you in')
-    endpoint = str(status.get('api_base_url', '')).rstrip('/')
-    if not endpoint.startswith('https://') or endpoint == PRODUCTION:
+    try:
+        endpoint = urlsplit(status.get('api_base_url', ''))
+        port = endpoint.port
+        unsafe = (endpoint.scheme != 'https' or not endpoint.hostname
+                  or endpoint.hostname.rstrip('.').lower() == urlsplit(PRODUCTION).hostname
+                  or endpoint.username is not None or endpoint.password is not None
+                  or bool(endpoint.query) or bool(endpoint.fragment)
+                  or port == 0)
+    except (AttributeError, TypeError, ValueError):
+        unsafe = True
+    if unsafe:
         raise ValueError('Use your provisioned Dev context; this check does not change the connection')
     profile = directory/'reviewer.json'
     if profile.is_symlink() or not profile.is_file():

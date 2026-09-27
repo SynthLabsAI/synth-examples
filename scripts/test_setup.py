@@ -60,6 +60,16 @@ class SetupTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     CHECK.check(folder, True, runner)
 
+    def test_production_url_spellings_and_malformed_urls_rejected(self):
+        for endpoint in (CHECK.PRODUCTION.upper(), CHECK.PRODUCTION+':443',
+                         CHECK.PRODUCTION+'./', CHECK.PRODUCTION+'/api',
+                         'https://user@sprites-gateway.api.synthlabs.ai',
+                         'https://provisioned.example.test?token=not-a-real-secret',
+                         'https://', 'https://provisioned.example.test:bad',
+                         'https://provisioned.example.test/#fragment'):
+            with self.subTest(endpoint=endpoint), self.assertRaises(ValueError):
+                self.run_check(api_base_url=endpoint)
+
     def test_project_copies_are_identical(self):
         self.assertEqual((ROOT/"examples/review-permissions/check_setup.py").read_bytes(),
                          (ROOT/"examples/review-lab/check_setup.py").read_bytes())
